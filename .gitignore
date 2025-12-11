@@ -4,29 +4,29 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.Python
+env/
+venv/
+.venv/
+.ENV
+.ENV.local
+.env
+.env.local
+.env.*
 
-# Database
-qwerich_desktop/qwerich.db
+# Build artifacts
+build/
+dist/
+*.egg-info/
 
 # Logs
 *.log
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# Dependencies
-venv/
-.venv/
-.env/
 
 # Editors
 .vscode/
 .idea/
 *.swp
 *.swo
-*.tmp
 
 # OS
 .DS_Store
@@ -37,8 +37,7 @@ Thumbs.db
 coverage/
 htmlcov/
 
-# Build artifacts
-dist/
-build/
-target/
+# Testing
+.pytest_cache/
+.mypy_cache/
 ```

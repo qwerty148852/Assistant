@@ -1,3 +1,4 @@
-kivy==2.2.1
-kivymd==1.1.1
-psutil==5.9.5
+ttkbootstrap==1.10.1
+psutil==5.9.8
+bcrypt==4.1.2
+pillow==10.3.0

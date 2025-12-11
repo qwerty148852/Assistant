@@ -2,111 +2,101 @@
 Login Screen for Qwerich Desktop Application
 """
 
-from kivy.uix.screenmanager import Screen
-from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.textfield import MDTextField
-from kivymd.uix.button import MDRaisedButton
-from kivymd.uix.label import MDLabel
-from kivymd.uix.selectioncontrol import MDSwitch
-from kivymd.uix.dialog import MDDialog
-from kivy.metrics import dp
+import tkinter as tk
+from tkinter import ttk
+import ttkbootstrap as ttkb
+from ttkbootstrap.constants import *
 
 
-class LoginScreen(Screen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+class LoginScreen(ttk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
         self.setup_ui()
     
     def setup_ui(self):
-        layout = MDBoxLayout(
-            orientation="vertical",
-            padding=dp(50),
-            spacing=dp(20),
-            pos_hint={'center_x': 0.5, 'center_y': 0.5},
-            size_hint=(0.6, 0.8)
-        )
+        # Clear existing widgets
+        for widget in self.winfo_children():
+            widget.destroy()
+            
+        # Main frame
+        main_frame = ttk.Frame(self)
+        main_frame.pack(expand=True, fill='both', padx=50, pady=20)
         
         # Title
-        title = MDLabel(
+        title_label = ttk.Label(
+            main_frame,
             text="Добро пожаловать в Qwerich",
-            halign="center",
-            theme_text_color="Primary",
-            font_style="H4"
+            font=("Arial", 24, "bold")
         )
-        layout.add_widget(title)
+        title_label.pack(pady=(0, 10))
         
-        subtitle = MDLabel(
+        # Subtitle
+        subtitle_label = ttk.Label(
+            main_frame,
             text="Войдите в свой аккаунт",
-            halign="center",
-            theme_text_color="Secondary",
-            font_style="Subtitle1"
+            font=("Arial", 14)
         )
-        layout.add_widget(subtitle)
+        subtitle_label.pack(pady=(0, 30))
         
         # Username/Email field
-        self.username_field = MDTextField(
-            hint_text="Email или имя пользователя",
-            mode="outlined",
-            size_hint_y=None,
-            height=dp(55)
+        username_label = ttk.Label(main_frame, text="Email или имя пользователя:")
+        username_label.pack(anchor='w', padx=20)
+        
+        self.username_var = tk.StringVar()
+        self.username_entry = ttk.Entry(
+            main_frame,
+            textvariable=self.username_var,
+            font=("Arial", 12),
+            width=30
         )
-        layout.add_widget(self.username_field)
+        self.username_entry.pack(pady=(5, 20), padx=20, fill='x')
         
         # Password field
-        self.password_field = MDTextField(
-            hint_text="Пароль",
-            mode="outlined",
-            password=True,
-            size_hint_y=None,
-            height=dp(55)
+        password_label = ttk.Label(main_frame, text="Пароль:")
+        password_label.pack(anchor='w', padx=20)
+        
+        self.password_var = tk.StringVar()
+        self.password_entry = ttk.Entry(
+            main_frame,
+            textvariable=self.password_var,
+            font=("Arial", 12),
+            width=30,
+            show="*"
         )
-        layout.add_widget(self.password_field)
+        self.password_entry.pack(pady=(5, 20), padx=20, fill='x')
         
         # "I'm not a robot" checkbox
-        checkbox_layout = MDBoxLayout(
-            orientation="horizontal",
-            size_hint_y=None,
-            height=dp(40)
-        )
-        
-        self.robot_checkbox = MDSwitch()
-        checkbox_layout.add_widget(self.robot_checkbox)
-        
-        checkbox_label = MDLabel(
+        self.robot_var = tk.BooleanVar()
+        self.robot_checkbox = ttk.Checkbutton(
+            main_frame,
             text="Я не робот",
-            theme_text_color="Secondary",
-            halign="left",
-            valign="middle"
+            variable=self.robot_var
         )
-        checkbox_layout.add_widget(checkbox_label)
-        
-        layout.add_widget(checkbox_layout)
+        self.robot_checkbox.pack(anchor='w', padx=20, pady=(0, 20))
         
         # Login button
-        self.login_button = MDRaisedButton(
+        self.login_button = ttk.Button(
+            main_frame,
             text="Войти",
-            size_hint_y=None,
-            height=dp(50),
-            on_release=self.login
+            bootstyle="primary",
+            command=self.login
         )
-        layout.add_widget(self.login_button)
+        self.login_button.pack(pady=(0, 10), padx=20, fill='x')
         
         # Register button
-        self.register_button = MDRaisedButton(
+        self.register_button = ttk.Button(
+            main_frame,
             text="Зарегистрироваться",
-            size_hint_y=None,
-            height=dp(50),
-            md_bg_color=(0.2, 0.6, 1, 1),
-            on_release=self.go_to_register
+            bootstyle="secondary",
+            command=self.go_to_register
         )
-        layout.add_widget(self.register_button)
-        
-        self.add_widget(layout)
-    
-    def login(self, instance):
-        username_or_email = self.username_field.text.strip()
-        password = self.password_field.text.strip()
-        is_robot_checked = self.robot_checkbox.active
+        self.register_button.pack(pady=(0, 20), padx=20, fill='x')
+
+    def login(self):
+        username_or_email = self.username_var.get().strip()
+        password = self.password_var.get().strip()
+        is_robot_checked = self.robot_var.get()
         
         # Validate inputs
         if not username_or_email:
@@ -122,28 +112,30 @@ class LoginScreen(Screen):
             return
         
         # Authenticate user
-        app = self.manager.parent
+        app = self.controller
         user = app.db.authenticate_user(username_or_email, password)
         
         if user:
             app.current_user = user
-            # TODO: Navigate to main screen after successful login
-            print(f"Login successful for user: {user['username']}")
+            # Navigate to main app screen after successful login
+            app.show_frame("MainAppScreen")
         else:
             self.show_error("Неверные учетные данные")
     
-    def go_to_register(self, instance):
-        self.manager.current = 'register'
+    def go_to_register(self):
+        self.controller.show_frame("RegistrationScreen")
     
     def show_error(self, message):
-        dialog = MDDialog(
-            title="Ошибка",
-            text=message,
-            buttons=[
-                MDRaisedButton(
-                    text="OK",
-                    on_release=lambda x: dialog.dismiss()
-                )
-            ]
-        )
-        dialog.open()
+        error_window = tk.Toplevel(self)
+        error_window.title("Ошибка")
+        error_window.geometry("300x150")
+        error_window.transient(self)
+        error_window.grab_set()
+        
+        ttk.Label(error_window, text=message, wraplength=250).pack(pady=20)
+        
+        ttk.Button(
+            error_window, 
+            text="OK", 
+            command=error_window.destroy
+        ).pack(pady=(0, 20))
