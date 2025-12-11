@@ -1,0 +1,121 @@
+#:kivy 2.0.0
+
+<ThemeManager>:
+    canvas:
+        Color:
+            rgba: root.get_background_color()
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<NavigationDrawerButton@MDFillRoundFlatButton>:
+    size_hint: 0.9, None
+    height: 50
+    font_size: '16sp'
+    md_bg_color: root.get_nav_button_color()
+
+<ChatBubble@BoxLayout>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: self.minimum_height
+    padding: 10
+    spacing: 10
+    
+    avatar: avatar
+    message_label: message_label
+    
+    canvas.before:
+        Color:
+            rgba: root.get_bubble_color()
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [15,]
+    
+    Image:
+        id: avatar
+        source: root.get_avatar_source()
+        size_hint: None, None
+        size: 40, 40
+        pos_hint: {'center_y': 0.5}
+    
+    MDLabel:
+        id: message_label
+        text: root.text
+        size_hint_x: 0.8
+        halign: 'left'
+        text_size: self.width, None
+        height: self.texture_size[1]
+        theme_text_color: 'Custom'
+        text_color: root.get_text_color()
+
+<SystemInfoCard@MDCard>:
+    orientation: 'vertical'
+    padding: 15
+    size_hint_y: None
+    height: 200
+    
+    canvas.before:
+        Color:
+            rgba: root.get_card_color()
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10,]
+    
+    MDLabel:
+        id: title
+        text: root.title
+        font_style: 'H6'
+        size_hint_y: None
+        height: self.texture_size[1]
+    
+    MDProgressBar:
+        id: progress
+        value: root.value
+        size_hint_y: None
+        height: 10
+        pos_hint: {'center_x': 0.5}
+    
+    MDLabel:
+        id: value_label
+        text: root.value_text
+        halign: 'center'
+        font_style: 'Caption'
+        size_hint_y: None
+        height: self.texture_size[1]
+
+<MessengerUserCard@MDCard>:
+    orientation: 'horizontal'
+    padding: 10
+    size_hint_y: None
+    height: 70
+    
+    canvas.before:
+        Color:
+            rgba: root.get_user_card_color()
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [8,]
+    
+    Image:
+        source: 'assets/icons/user.png'  # Placeholder
+        size_hint: None, None
+        size: 40, 40
+        pos_hint: {'center_y': 0.5}
+    
+    MDLabel:
+        id: nickname
+        text: root.nickname
+        halign: 'left'
+        font_style: 'Subtitle1'
+        pos_hint: {'center_y': 0.5}
+    
+    MDLabel:
+        id: status
+        text: root.status
+        halign: 'right'
+        font_style: 'Caption'
+        theme_text_color: 'Secondary'
+        pos_hint: {'center_y': 0.5}
