@@ -1,0 +1,17 @@
+{
+  "theme": "ocean_blue",
+  "animations_enabled": true,
+  "font_size": 16,
+  "account": {
+    "username": "",
+    "email": ""
+  },
+  "messenger": {
+    "nickname": "",
+    "port": 12345,
+    "sound_notifications": true
+  },
+  "privacy": {
+    "collect_anonymous_data": false
+  }
+}
