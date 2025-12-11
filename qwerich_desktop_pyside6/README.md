@@ -1,14 +1,29 @@
-# Qwerich Desktop Application (PySide6 Version)
+# Qwerich Desktop Application (Enhanced PySide6 Version)
 
-This is a beautiful, modern desktop application built with PySide6. It features a sleek dark theme and intuitive user interface.
+This is a beautiful, modern desktop application built with PySide6. It features a sleek gray-green theme with animations and intuitive user interface.
 
 ## Features
 
-- Beautiful dark-themed GUI using PySide6
+- Beautiful gray-green themed GUI using PySide6 with animations
 - User authentication system (login/register)
 - System information monitoring
+- Interactive chat with virtual assistant
+- LAN messenger for local network communication
+- Comprehensive documentation system
+- Settings panel with multiple tabs
 - Modular architecture
 - Responsive design
+
+## Enhancements in this Version
+
+- **Animated UI Elements**: Smooth animations on hover and click events
+- **Enhanced Chat Screen**: Modern chat interface with message bubbles and typing indicators
+- **Improved Messenger**: Styled contact list with status indicators and message history
+- **Modern Settings**: Tabbed interface with appearance, account, privacy, and messenger settings
+- **Rich Documentation**: Well-organized documentation with search and navigation
+- **Animated Navigation**: Hover animations on sidebar buttons
+- **Gradient Backgrounds**: Modern gradient styling in navigation areas
+- **Enhanced Styling**: Improved color scheme and visual consistency
 
 ## Requirements
 
@@ -40,6 +55,7 @@ The application follows a modern PySide6 architecture with:
 - QSplitter for main layout with navigation sidebar
 - Custom styling with QSS (Qt Style Sheets)
 - Responsive layouts using QVBoxLayout, QHBoxLayout, and QFormLayout
+- Animated buttons with QPropertyAnimation
 
 ## Screens
 
@@ -48,25 +64,30 @@ The application follows a modern PySide6 architecture with:
 3. **Main Application Screen** - Features navigation sidebar and content area with:
    - Home dashboard
    - System information
-   - Chat interface
-   - Documentation
-   - Settings
-   - LAN Messenger
+   - Interactive chat with Qwerich assistant
+   - LAN Messenger with contacts and messaging
+   - Documentation with search and navigation
+   - Settings with multiple tabs
 
 ## Design Highlights
 
-- **Modern Dark Theme**: Sleek dark interface with carefully chosen colors
+- **Modern Gray-Green Theme**: Sleek interface with carefully chosen colors
+- **Animations**: Smooth hover and transition effects
 - **Responsive Layout**: Adapts to different screen sizes
-- **Intuitive Navigation**: Clear sidebar navigation system
+- **Intuitive Navigation**: Clear sidebar navigation system with icons
 - **Consistent Styling**: Uniform look and feel across all components
 - **Accessibility**: Proper contrast and readable fonts
+- **Modern UI Components**: Enhanced message bubbles, contact lists, and input fields
 
 ## Modules
 
 - **Authentication**: Secure login and registration system
 - **System Monitor**: Real-time system information display
 - **Database**: SQLite-based user management
-- **Settings**: Application configuration management
+- **Settings**: Application configuration management with multiple tabs
+- **Chat Engine**: Intelligent response generation for assistant
+- **Messenger**: Local network communication system
+- **Documentation**: Comprehensive help system
 
 ## License
 

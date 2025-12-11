@@ -7,8 +7,47 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
     QTextEdit, QFrame, QSplitter, QScrollArea, QTabWidget
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QEasingCurve, QPropertyAnimation, QRect
 from PySide6.QtGui import QFont
+
+
+class AnimatedButton(QPushButton):
+    """Custom animated button with hover effects"""
+    def __init__(self, text="", parent=None):
+        super().__init__(text, parent)
+        self.setMinimumHeight(45)
+        self.setCursor(Qt.PointingHandCursor)
+        self._animation = QPropertyAnimation(self, b"geometry")
+        self._animation.setDuration(100)
+        self._animation.setEasingCurve(QEasingCurve.InOutQuad)
+        
+    def enterEvent(self, event):
+        original_geo = self.geometry()
+        self._animation.setStartValue(original_geo)
+        self._animation.setEndValue(
+            QRect(
+                original_geo.x() - 2, 
+                original_geo.y() - 1, 
+                original_geo.width() + 4, 
+                original_geo.height() + 2
+            )
+        )
+        self._animation.start()
+        super().enterEvent(event)
+    
+    def leaveEvent(self, event):
+        original_geo = self.geometry()
+        self._animation.setStartValue(original_geo)
+        self._animation.setEndValue(
+            QRect(
+                original_geo.x() + 2, 
+                original_geo.y() + 1, 
+                original_geo.width() - 4, 
+                original_geo.height() - 2
+            )
+        )
+        self._animation.start()
+        super().leaveEvent(event)
 
 
 class MainAppScreen(QWidget):
@@ -26,58 +65,81 @@ class MainAppScreen(QWidget):
         
         # Navigation sidebar
         self.nav_frame = QFrame()
-        self.nav_frame.setFixedWidth(200)
+        self.nav_frame.setFixedWidth(220)
         self.nav_frame.setStyleSheet("""
             QFrame {
-                background-color: #3c3f41;
-                border-right: 1px solid #555555;
-                padding: 10px;
+                background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, 
+                                                 stop: 0 #2C2C2C, stop: 1 #1E1E1E);
+                border-right: 1px solid #444444;
+                padding: 15px;
             }
         """)
         
         nav_layout = QVBoxLayout(self.nav_frame)
         nav_layout.setAlignment(Qt.AlignTop)
         
+        # App logo/title in sidebar
+        logo_label = QLabel("QWERICH")
+        logo_font = QFont()
+        logo_font.setPointSize(16)
+        logo_font.setBold(True)
+        logo_label.setFont(logo_font)
+        logo_label.setStyleSheet("color: #4CAF50; margin-bottom: 20px; text-align: center;")
+        logo_label.setAlignment(Qt.AlignCenter)
+        nav_layout.addWidget(logo_label)
+        
         # Navigation buttons
         nav_buttons = [
-            ("Главная", self.show_home),
-            ("Чат с Qwerich", self.show_chat),
-            ("Системная информация", self.show_system_info),
-            ("LAN Мессенджер", self.show_messenger),
-            ("Документация", self.show_docs),
-            ("Настройки", self.show_settings),
-            ("Выйти", self.logout)
+            ("🏠 Главная", self.show_home),
+            ("💬 Чат с Qwerich", self.show_chat),
+            ("💻 Системная информация", self.show_system_info),
+            ("📡 LAN Мессенджер", self.show_messenger),
+            ("📖 Документация", self.show_docs),
+            ("⚙️ Настройки", self.show_settings),
+            ("🚪 Выйти", self.logout)
         ]
         
         for text, command in nav_buttons:
-            btn = QPushButton(text)
+            btn = AnimatedButton(text)
             btn.setStyleSheet("""
                 QPushButton {
-                    background-color: #4a4d4f;
+                    background-color: #3C3F41;
                     border: 1px solid #555555;
-                    border-radius: 5px;
-                    padding: 10px;
+                    border-radius: 8px;
+                    padding: 12px;
                     color: #e7e7e7;
                     text-align: left;
                     font-size: 14px;
+                    margin-bottom: 8px;
                 }
                 QPushButton:hover {
-                    background-color: #5a5d5f;
+                    background-color: #4A4D4F;
+                    border: 1px solid #4CAF50;
                 }
                 QPushButton:pressed {
-                    background-color: #3a3d3f;
+                    background-color: #2D2D30;
                 }
             """)
             btn.clicked.connect(command)
             nav_layout.addWidget(btn)
         
+        # Add stretch to push buttons to the top
+        nav_layout.addStretch()
+        
+        # User info in sidebar
+        if self.parent.current_user:
+            user_info = QLabel(f"👤 {self.parent.current_user['username']}")
+            user_info.setStyleSheet("color: #AAAAAA; font-size: 12px; margin-top: 10px;")
+            user_info.setAlignment(Qt.AlignCenter)
+            nav_layout.addWidget(user_info)
+        
         # Content area
         self.content_frame = QFrame()
         self.content_frame.setStyleSheet("""
             QFrame {
-                background-color: #2d2d30;
+                background-color: #1E1E1E;
                 border: none;
-                padding: 10px;
+                padding: 15px;
             }
         """)
         
@@ -86,7 +148,7 @@ class MainAppScreen(QWidget):
         # Add frames to splitter
         splitter.addWidget(self.nav_frame)
         splitter.addWidget(self.content_frame)
-        splitter.setSizes([200, 980])  # Initial sizes
+        splitter.setSizes([220, 980])  # Initial sizes
         
         main_layout.addWidget(splitter)
         self.setLayout(main_layout)
@@ -159,22 +221,9 @@ class MainAppScreen(QWidget):
     def show_chat(self):
         self.clear_content()
         
-        # Placeholder for chat screen
-        chat_widget = QWidget()
-        chat_layout = QVBoxLayout(chat_widget)
-        
-        title_label = QLabel("Чат с Qwerich")
-        title_font = QFont()
-        title_font.setPointSize(16)
-        title_font.setBold(True)
-        title_label.setFont(title_font)
-        title_label.setStyleSheet("color: #e7e7e7;")
-        chat_layout.addWidget(title_label)
-        
-        # Chat interface placeholder
-        chat_placeholder = QLabel("Интерфейс чата будет реализован здесь")
-        chat_placeholder.setStyleSheet("color: #e7e7e7; font-size: 14px;")
-        chat_layout.addWidget(chat_placeholder)
+        # Import and use the enhanced chat screen
+        from .assistant_chat.chat_screen_pyside6 import ModernChatScreen
+        chat_widget = ModernChatScreen()
         
         # Add to content layout
         scroll_area = QScrollArea()
@@ -285,34 +334,9 @@ class MainAppScreen(QWidget):
     def show_messenger(self):
         self.clear_content()
         
-        # Messenger content placeholder
-        msg_widget = QWidget()
-        msg_layout = QVBoxLayout(msg_widget)
-        
-        title_label = QLabel("LAN Мессенджер")
-        title_font = QFont()
-        title_font.setPointSize(16)
-        title_font.setBold(True)
-        title_label.setFont(title_font)
-        title_label.setStyleSheet("color: #e7e7e7;")
-        msg_layout.addWidget(title_label)
-        
-        msg_text = QTextEdit()
-        msg_text.setPlainText(
-            "LAN мессенджер будет работать здесь.\n"
-            "В реальном приложении вы сможете общаться с другими пользователями в локальной сети."
-        )
-        msg_text.setReadOnly(True)
-        msg_text.setStyleSheet("""
-            QTextEdit {
-                background-color: #333333;
-                border: 1px solid #555555;
-                border-radius: 5px;
-                color: #e7e7e7;
-                font-size: 14px;
-            }
-        """)
-        msg_layout.addWidget(msg_text)
+        # Import and use the enhanced messenger screen
+        from .messenger.messenger_screen_pyside6 import ModernMessengerScreen
+        msg_widget = ModernMessengerScreen()
         
         # Add to content layout
         scroll_area = QScrollArea()
@@ -330,31 +354,9 @@ class MainAppScreen(QWidget):
     def show_docs(self):
         self.clear_content()
         
-        # Documentation content placeholder
-        docs_widget = QWidget()
-        docs_layout = QVBoxLayout(docs_widget)
-        
-        title_label = QLabel("Документация")
-        title_font = QFont()
-        title_font.setPointSize(16)
-        title_font.setBold(True)
-        title_label.setFont(title_font)
-        title_label.setStyleSheet("color: #e7e7e7;")
-        docs_layout.addWidget(title_label)
-        
-        docs_text = QTextEdit()
-        docs_text.setPlainText("Интерфейс документации будет реализован здесь")
-        docs_text.setReadOnly(True)
-        docs_text.setStyleSheet("""
-            QTextEdit {
-                background-color: #333333;
-                border: 1px solid #555555;
-                border-radius: 5px;
-                color: #e7e7e7;
-                font-size: 14px;
-            }
-        """)
-        docs_layout.addWidget(docs_text)
+        # Import and use the enhanced documentation screen
+        from .documentation.docs_screen_pyside6 import ModernDocumentationScreen
+        docs_widget = ModernDocumentationScreen()
         
         # Add to content layout
         scroll_area = QScrollArea()
@@ -372,31 +374,9 @@ class MainAppScreen(QWidget):
     def show_settings(self):
         self.clear_content()
         
-        # Settings content placeholder
-        settings_widget = QWidget()
-        settings_layout = QVBoxLayout(settings_widget)
-        
-        title_label = QLabel("Настройки")
-        title_font = QFont()
-        title_font.setPointSize(16)
-        title_font.setBold(True)
-        title_label.setFont(title_font)
-        title_label.setStyleSheet("color: #e7e7e7;")
-        settings_layout.addWidget(title_label)
-        
-        settings_text = QTextEdit()
-        settings_text.setPlainText("Интерфейс настроек будет реализован здесь")
-        settings_text.setReadOnly(True)
-        settings_text.setStyleSheet("""
-            QTextEdit {
-                background-color: #333333;
-                border: 1px solid #555555;
-                border-radius: 5px;
-                color: #e7e7e7;
-                font-size: 14px;
-            }
-        """)
-        settings_layout.addWidget(settings_text)
+        # Import and use the enhanced settings screen
+        from .settings.settings_screen_pyside6 import SettingsScreen
+        settings_widget = SettingsScreen(parent=self.parent)
         
         # Add to content layout
         scroll_area = QScrollArea()
